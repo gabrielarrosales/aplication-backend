@@ -26,7 +26,7 @@ export const createService = async (req, res) =>{
         'INSERT INTO services (servicename, idcategory, idtype, duration, price) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
         [data.servicename, data.idcategory, data.idtype, data.duration, data.price]);
 
-        return res.json(rows[0]);
+        return res.json(rows[]);
         
     }catch (error) {
 
@@ -44,7 +44,7 @@ export const createService = async (req, res) =>{
 }
 
 export const deleteService = async (req, res) =>{
-    const {idservice} = req.params;
+    const {idservice} = req;
     const {rowCount} = await pool.query ('DELETE  FROM services WHERE idservice = $1', [idservice])
     
     if (rowCount === 0) {

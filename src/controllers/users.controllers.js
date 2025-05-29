@@ -3,13 +3,13 @@ import { pool } from '../db.js';
 //el await es el que agarra todo y lo pausa
 export const getUsers = async (req, res) =>{
 
-    const {rows} = await pool.query('SELECT * FROM users')
+    const {rows} = await pool.query('SELECT * FROM user')
     res.json(rows);
 }
 
 export const getOneUser = async (req, res) =>{
     const {iduser} = req.params;
-    const {rows} = await pool.query ('SELECT * FROM users WHERE iduser = $1', [iduser])
+    const {rows} = await pool.query ('SELECT FROM users WHERE iduser = $1', [iduser])
     
     if (rows.length === 0) {
         return res.status(404).json({
