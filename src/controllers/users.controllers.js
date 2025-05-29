@@ -1,4 +1,4 @@
-import { pool } from '../db.js';
+import { pool } from '../db';
 
 //el await es el que agarra todo y lo pausa
 export const getUsers = async (req, res) =>{

@@ -62,7 +62,7 @@ export const updateService = async (req, res) =>{
     const {idservice} = req.params
     const data = req.body;
 
-    const {rows} = await pool.query('UPDATE services SET servicename = $1, idcategory= $2, idtype = $3, duration = $4, price = $5 WHERE idservice = $6 RETURNING *', 
+    const {rows} = await pool.query('UPDAT services SET servicename = $1, idcategory= $2, idtype = $3, duration = $4, price = $5 WHERE idservice = $6 RETURNING *', 
         [data.servicename, data.idcategory, data.idtype, data.duration, data.price, idservice] 
     )
 
