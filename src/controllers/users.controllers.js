@@ -1,6 +1,6 @@
 import { pool } from '../db.js';
 
-
+//el await es el que agarra todo y lo pausa
 export const getUsers = async (req, res) =>{
 
     const {rows} = await pool.query('SELECT * FROM users')
@@ -22,12 +22,12 @@ export const getOneUser = async (req, res) =>{
 export const createUser = async (req, res) =>{
     try{
         const data =req.body;
-    const {rows} = await pool.query(
+        const {rows} = await pool.query(
         'INSERT INTO users (username, password, firstname, lastname, email, phonenumber, address, idroll, status,  fecha_ingresado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *', 
         [data.username, data.password, data.firstname, data.lastname, data.email, data.phonenumber, data.address, data.idroll, data.status, new Date()]);
 
         return res.json(rows[0]);
-        
+
     }catch (error) {
 
         if (error?.code === "23505"){
