@@ -7,7 +7,7 @@ const router = Router();
 router.get('/users', getUsers);
 
 //traer un usuario en especifico 
-router.get('/users/', getOneUser)
+router.get('/users/:iduser', getOneUser);
 
 //aqui se recibe un dato atraves de request body
 router.post('/users', createUser);
@@ -16,6 +16,6 @@ router.post('/users', createUser);
 router.delete('/users/:iduser', deleteUser )
 
 //actualizar un usuario 
-router.put('/user/:iduser', updateUser)
+router.put('/users/:iduser', updateUser)
 
 export default router;
