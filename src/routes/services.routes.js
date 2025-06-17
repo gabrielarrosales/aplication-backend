@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { deleteService, createService, getOneServices, getServices, updateService } from '../controllers/services.controllers.js';
+import { deleteService, createService, getOneService, getServices, updateService } from '../controllers/services.controllers.js';
 
 const router = Router();
 
@@ -7,7 +7,7 @@ const router = Router();
 router.get('/services', getServices);
 
 //traer un servicio especifico
-router.get('/services/:idservice', getOneServices);
+router.get('/services/:idservice', getOneService);
 
 //crear un nuevo servicio
 router.post('/services', createService);
