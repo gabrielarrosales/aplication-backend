@@ -16,18 +16,18 @@ export const getEmployeeById = async (id) => {
 export const createNewEmployee = async (data) => {
     const result = await pool.query(
         `INSERT INTO employees 
-        (name, lastname, email, phonenumber, address, position, salary, hire_date) 
+        (firstname, lastname, address, phonenumber, specialty, username, password, email) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
         RETURNING *`,
         [
-        data.name,
+        data.firstname,
         data.lastname,
-        data.email,
-        data.phonenumber,
         data.address,
-        data.position,
-        data.salary,
-        data.hire_date || new Date()
+        data.phonenumber,
+        data.specialty,
+        data.username,
+        data.password,
+        data.email,
         ]
     );
 
@@ -44,25 +44,25 @@ export const deleteEmployeeById = async (id) => {
 export const updateEmployeeById = async (id, data) => {
     const result = await pool.query(
         `UPDATE employees SET 
-        name = $1, 
+        firstname = $1, 
         lastname = $2, 
-        email = $3, 
+        address = $3, 
         phonenumber = $4, 
-        address = $5, 
-        position = $6, 
-        salary = $7, 
-        hire_date = $8 
+        specialty = $5, 
+        username = $6, 
+        password = $7, 
+        email= $8 
         WHERE idemployee = $9 
         RETURNING *`,
         [
-        data.name,
+        data.firstname,
         data.lastname,
-        data.email,
-        data.phonenumber,
         data.address,
-        data.position,
-        data.salary,
-        data.hire_date,
+        data.phonenumber,
+        data.specialty,
+        data.username,
+        data.password,
+        data.email,
         id
         ]
     );

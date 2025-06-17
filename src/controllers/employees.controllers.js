@@ -41,11 +41,19 @@ export const createEmployee = async (req, res) => {
 export const deleteEmployee = async (req, res) => {
     try {
         const deletedEmployee = await deleteEmployeeById(req.params.idemployee);
-        if (!deletedEmployee) return res.status(404).json({ message: 'Empleado no encontrado' });
-        res.json({ message: 'Empleado eliminado', deletedEmployee });
+
+        if (!deletedEmployee) {
+        return res.status(404).json({ message: 'Empleado no encontrado' });
+        }
+
+        return res.json({
+        message: 'Empleado eliminado correctamente',
+        deletedEmployee
+        });
+
     } catch (error) {
-        console.error('Error al eliminar empleado:', error);
-        res.status(500).json({ message: 'Error al eliminar empleado' });
+        console.error('Error al eliminar empleado:', error.message);
+        return res.status(500).json({ message: 'Error al eliminar empleado', error: error.message });
     }
 };
 
