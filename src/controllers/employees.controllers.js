@@ -1,70 +1,61 @@
 import { getAllEmployees, getEmployeeById, createNewEmployee, deleteEmployeeById,updateEmployeeById} from '../models/employees.models.js';
+import { employeeSchema } from '../utils/zodSchemas.js';
 
-// Obtener todos los empleados
-export const getEmployees = async (req, res) => {
-    try {
-        const employees = await getAllEmployees();
-        res.json(employees);
-    } catch (error) {
-        console.error('Error al obtener empleados:', error);
-        res.status(500).json({ message: 'Error al obtener empleados' });
-    }
+export const getEmployees = async (req, res, next) => {
+  try {
+    const employees = await getAllEmployees();
+    res.json(employees);
+  } catch (error) {
+    next(error); 
+  }
 };
 
-// Obtener un empleado por ID
-export const getOneEmployee = async (req, res) => {
-    try {
-        const employee = await getEmployeeById(req.params.idemployee);
-        if (!employee) return res.status(404).json({ message: 'Empleado no encontrado' });
-        res.json(employee);
-    } catch (error) {
-        console.error('Error al obtener empleado:', error);
-        res.status(500).json({ message: 'Error al obtener empleado' });
-    }
+export const getOneEmployee = async (req, res, next) => {
+  try {
+    const employee = await getEmployeeById(req.params.idemployee);
+    res.json(employee);
+
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Crear un nuevo empleado
-export const createEmployee = async (req, res) => {
+export const createEmployee = async (req, res, next) => {
     try {
-        const newEmployee = await createNewEmployee(req.body);
+        console.log('Datos recibidos:', req.body);
+
+        const validatedData = employeeSchema.parse(req.body);
+        const newEmployee = await createNewEmployee(validatedData);
         res.status(201).json(newEmployee);
+
     } catch (error) {
-        if (error?.code === "23505") {
-        return res.status(409).json({ message: 'El empleado ya existe' });
-        }
-        console.error('Error al crear empleado:', error);
-        res.status(500).json({ message: 'Error al crear empleado' });
+        console.error('Error capturado:', error.message);
+        next(error); 
     }
 };
 
-// Eliminar un empleado
-export const deleteEmployee = async (req, res) => {
+export const deleteEmployee = async (req, res, next) => {
     try {
         const deletedEmployee = await deleteEmployeeById(req.params.idemployee);
-
-        if (!deletedEmployee) {
-        return res.status(404).json({ message: 'Empleado no encontrado' });
-        }
-
-        return res.json({
-        message: 'Empleado eliminado correctamente',
-        deletedEmployee
-        });
+        res.json({ message: 'Empleado eliminado', deletedEmployee });
 
     } catch (error) {
-        console.error('Error al eliminar empleado:', error.message);
-        return res.status(500).json({ message: 'Error al eliminar empleado', error: error.message });
+        next(error); 
     }
 };
 
 // Actualizar un empleado
-export const updateEmployee = async (req, res) => {
+export const updateEmployee = async (req, res, next) => {
     try {
-        const updatedEmployee = await updateEmployeeById(req.params.idemployee, req.body);
-        if (!updatedEmployee) return res.status(404).json({ message: 'Empleado no encontrado' });
+        console.log('Datos recibidos:', req.body);
+
+        const validatedData = employeeSchema.partial().parse(req.body);
+
+        const updatedEmployee = await updateEmployeeById(req.params.idemployee, validatedData);
         res.json(updatedEmployee);
+
     } catch (error) {
-        console.error('Error al actualizar empleado:', error);
-        res.status(500).json({ message: 'Error al actualizar empleado' });
+        console.error('Error capturado:', error.message);
+        next(error); 
     }
 };

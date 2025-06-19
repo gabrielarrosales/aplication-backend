@@ -28,10 +28,36 @@ export const deleteServiceById = async (id) => {
 };
 
 // Actualizar un servicio
-export const updateServiceById = async (id, data) => {
-    const result = await pool.query(
-        'UPDATE services SET servicename = $1, idcategory = $2, idtype = $3, duration = $4, price = $5 WHERE idservice = $6 RETURNING *',
-        [data.servicename, data.idcategory, data.idtype, data.duration, data.price, id]
-    );
+export const updateServiceById = async (id, userData) => {
+    const fields = [];
+    const values = [];
+
+    let query = 'UPDATE services SET ';
+    let counter = 1;
+
+    const updatableFields = [
+        'servicename',
+        'idcategory',
+        'idtype',
+        'duration',
+        'price'
+    ];
+
+    for (const field of updatableFields) {
+        if (userData[field] !== undefined && userData[field] !== null) {
+        fields.push(`${field} = $${counter}`);
+        values.push(userData[field]);
+        counter++;
+        }
+    }
+
+    if (fields.length === 0) {
+        throw new Error('No hay campos válidos para actualizar');
+    }
+
+    query += fields.join(', ') + ` WHERE idservice = $${counter} RETURNING *`;
+    values.push(id);
+
+    const result = await pool.query(query, values);
     return result.rows[0];
 };

@@ -33,44 +33,39 @@ export const deleteUserById = async (id) => {
 
 // Actualizar un usuario por ID
 export const updateUserById = async (id, userData) => {
-    const {
-        username,
-        password,
-        firstname,
-        lastname,
-        email,
-        phonenumber,
-        address,
-        idroll,
-        status
-    } = userData;
+    const fields = [];
+    const values = [];
 
-    const result = await pool.query(
-        `UPDATE users SET 
-        username = $1, 
-        password = $2, 
-        firstname = $3, 
-        lastname = $4, 
-        email = $5, 
-        phonenumber = $6, 
-        address = $7, 
-        idroll = $8, 
-        status = $9  
-        WHERE iduser = $10 
-        RETURNING *`,
-        [
-        username,
-        password,
-        firstname,
-        lastname,
-        email,
-        phonenumber,
-        address,
-        idroll,
-        status,
-        id
-        ]
-    );
+    let query = 'UPDATE users SET ';
+    let counter = 1;
 
+    const updatableFields = [
+        'username',
+        'password',
+        'firstname',
+        'lastname',
+        'email',
+        'phonenumber',
+        'address',
+        'idroll',
+        'status'
+    ];
+
+    for (const field of updatableFields) {
+        if (userData[field] !== undefined && userData[field] !== null) {
+        fields.push(`${field} = $${counter}`);
+        values.push(userData[field]);
+        counter++;
+        }
+    }
+
+    if (fields.length === 0) {
+        throw new Error('No hay campos válidos para actualizar');
+    }
+
+    query += fields.join(', ') + ` WHERE iduser = $${counter} RETURNING *`;
+    values.push(id);
+
+    const result = await pool.query(query, values);
     return result.rows[0];
 };

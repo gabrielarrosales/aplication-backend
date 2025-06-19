@@ -1,62 +1,63 @@
 import {getAllUsers, getUserById, createNewUser, deleteUserById, updateUserById} from '../models/users.models.js'; 
+import { userSchema } from '../utils/zodSchemas.js';
 
-//el await es el que agarra todo y lo pausa
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
     try {
         const users = await getAllUsers();
         res.json(users);
+        
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
-        res.status(500).json({ message: 'Error al obtener usuarios' });
+        next(error); 
     }
 };
 
-
-
-export const getOneUser = async (req, res) => {
+export const getOneUser = async (req, res, next) => {
     try {
         const user = await getUserById(req.params.iduser);
-        if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
         res.json(user);
+
     } catch (error) {
-        console.error('Error al obtener usuario:', error);
-        res.status(500).json({ message: 'Error al obtener usuario' });
+        next(error);
     }
 };
 
-
-// Crear un nuevo usuario
-export const createUser = async (req, res) => {
+export const createUser = async (req, res, next) => {
     try {
-        const newUser = await createNewUser(req.body);
+        console.log('Datos recibidos:', req.body);
+
+        const validatedData = userSchema.parse(req.body);
+        const newUser = await createNewUser(validatedData);
+
         res.status(201).json(newUser);
+
     } catch (error) {
-        if (error?.code === "23505") {
-        return res.status(409).json({ message: 'El usuario ya existe' });
-        }
-        console.error('Error al crear usuario:', error);
-        res.status(500).json({ message: 'Error al crear usuario' });
+        console.error('Error capturado:', error);
+        next(error); 
     }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res, next) => {
     try {
         const deletedUser = await deleteUserById(req.params.iduser);
-        if (!deletedUser) return res.status(404).json({ message: 'Usuario no encontrado' });
         res.json({ message: 'Usuario eliminado', deletedUser });
+
     } catch (error) {
-        console.error('Error al eliminar usuario:', error);
-        res.status(500).json({ message: 'Error al eliminar usuario' });
+        next(error); 
     }
 };
 
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
     try {
-        const updatedUser = await updateUserById(req.params.iduser, req.body);
-        if (!updatedUser) return res.status(404).json({ message: 'Usuario no encontrado' });
+        console.log('Datos recibidos:', req.body);
+
+        const validatedData = userSchema.partial().parse(req.body);
+
+        const updatedUser = await updateUserById(req.params.iduser, validatedData);
         res.json(updatedUser);
+
     } catch (error) {
-        console.error('Error al actualizar usuario:', error);
-        res.status(500).json({ message: 'Error al actualizar usuario' });
+        console.error('Error capturado:', error.message);
+        next(error); 
     }
 };

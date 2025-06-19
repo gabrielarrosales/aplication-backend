@@ -1,62 +1,62 @@
 import { getAllServices, getServiceById, createNewService, deleteServiceById, updateServiceById} from '../models/services.models.js';
+import { serviceSchema } from '../utils/zodSchemas.js';
 
-
-export const getServices = async (req, res) => {
+export const getServices = async (req, res, next) => {
     try {
         const services = await getAllServices();
         res.json(services);
+
     } catch (error) {
-        console.error('Error al obtener servicios:', error);
-        res.status(500).json({ message: 'Error al obtener servicios' });
+        next(error);
     }
 };
 
-
-export const getOneService = async (req, res) => {
+export const getOneService = async (req, res, next) => {
     try {
         const service = await getServiceById(req.params.idservice);
-        if (!service) return res.status(404).json({ message: 'Servicio no encontrado' });
         res.json(service);
+
     } catch (error) {
-        console.error('Error al obtener servicio:', error);
-        res.status(500).json({ message: 'Error al obtener servicio' });
+        next(error);
     }
 };
 
-
-export const createService = async (req, res) => {
+export const createService = async (req, res, next) => {
     try {
-        const newService = await createNewService(req.body);
+        console.log('Datos recibidos:', req.body);
+        const validatedData = serviceSchema.parse(req.body);
+        const newService = await createNewService(validatedData);
         res.status(201).json(newService);
+
     } catch (error) {
-        if (error?.code === "23505") {
-        return res.status(409).json({ message: 'El servicio ya existe' });
-        }
-        console.error('Error al crear servicio:', error);
-        res.status(500).json({ message: 'Error al crear servicio' });
+        console.error('Error capturado:', error.message);
+        next(error); 
     }
 };
 
 
-export const deleteService = async (req, res) => {
+export const deleteService = async (req, res, next) => {
     try {
         const deletedService = await deleteServiceById(req.params.idservice);
-        if (!deletedService) return res.status(404).json({ message: 'Servicio no encontrado' });
         res.json({ message: 'Servicio eliminado', deletedService });
+
     } catch (error) {
-        console.error('Error al eliminar servicio:', error);
-        res.status(500).json({ message: 'Error al eliminar servicio' });
+        next(error); 
     }
 };
 
 
-export const updateService = async (req, res) => {
+export const updateService = async (req, res, next) => {
     try {
-        const updatedService = await updateServiceById(req.params.idservice, req.body);
-        if (!updatedService) return res.status(404).json({ message: 'Servicio no encontrado' });
+        console.log('Datos recibidos:', req.body);
+
+        const validatedData = serviceSchema.partial().parse(req.body);
+
+        const updatedService = await updateServiceById(req.params.idservice, validatedData);
         res.json(updatedService);
+
     } catch (error) {
-        console.error('Error al actualizar servicio:', error);
-        res.status(500).json({ message: 'Error al actualizar servicio' });
+        console.error('Error capturado:', error.message);
+        next(error); 
     }
 };
