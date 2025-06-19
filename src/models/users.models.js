@@ -69,3 +69,14 @@ export const updateUserById = async (id, userData) => {
     const result = await pool.query(query, values);
     return result.rows[0];
 };
+
+
+// Buscar usuario por username (para login)
+export const getUserByUsername = async (username) => {
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        return result.rows[0]; 
+    } catch (error) {
+        throw error;
+    }
+};

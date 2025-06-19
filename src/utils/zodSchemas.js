@@ -1,5 +1,3 @@
-//aqui se establecen los esquemas de validacion para cada uno 
-
 import { z } from 'zod';
 
 //users
