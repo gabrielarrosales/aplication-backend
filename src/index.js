@@ -6,6 +6,7 @@ import employessRoutes from './routes/employees.routes.js'
 import morgan from 'morgan';
 import { errorHandler } from './middlewares/errorHandler.js';
 import loginRoutes from './routes/login.routes.js';
+import reservationRoutes from './routes/reservation.routes.js';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use((err, req, res, next) => {
     errorHandler(err, req, res, next);
 });
 app.use(loginRoutes); 
+app.use(reservationRoutes);
 
 app.listen(PORT);
 console.log('Server on port', PORT );

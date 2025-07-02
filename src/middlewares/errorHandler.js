@@ -1,6 +1,15 @@
 import ApiError from '../utils/ApiError.js';
 
 export const errorHandler = (err, req, res, next) => {
+
+    const errors = {
+        DUPLICATED: {
+            message: "Registro duplicado",
+            code: "DUPLICATED_"
+        }
+    }
+
+
 let error = err;
 
 if (error.name === 'ZodError') {

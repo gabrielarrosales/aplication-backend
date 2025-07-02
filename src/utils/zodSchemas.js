@@ -113,3 +113,35 @@ export const serviceSchema = z.object({
         message: 'El precio debe ser mayor a cero'
     })
 });
+
+
+// Reservation Schema
+export const reservationSchema = z.object({
+    iduser: z.number({
+        required_error: "El ID del usuario es obligatorio",
+    }).int().positive({
+        message: "El ID del usuario debe ser un número positivo"
+    }),
+
+    idservice: z.number({
+        required_error: "El ID del servicio es obligatorio",
+    }).int().positive({
+        message: "El ID del servicio debe ser un número positivo"
+    }),
+
+    id_employee: z.number({ required_error: 'El ID del empleado es obligatorio' }).int().positive(),
+
+    date: z.string({
+        required_error: "La fecha es obligatoria",
+    }).refine(date => !isNaN(Date.parse(date)), {
+        message: "Fecha inválida. Usa el formato YYYY-MM-DD"
+    }),
+
+    hour: z.string({
+        required_error: "La hora es obligatoria",
+    }).regex(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, {
+        message: "Formato de hora inválido. Usa HH:mm:ss (ej: 14:30:00)"
+    }),
+
+    status: z.string().optional()
+});

@@ -14,15 +14,21 @@ export const getUserById = async (id) => {
 
 // Crear un nuevo usuario
 export const createNewUser = async (data) => {
-    const result = await pool.query(
-        `INSERT INTO users 
-        (username, password, firstname, lastname, email, phonenumber, address, idroll, status, fecha_ingresado) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
-        RETURNING *`,
-        [data.username, data.password, data.firstname, data.lastname, data.email, data.phonenumber, data.address, data.idroll, data.status, new Date()]
-);
-
-    return result.rows[0];
+    try {
+        const result = await pool.query(
+            `INSERT INTO users 
+            (username, password, firstname, lastname, email, phonenumber, address, idroll, status, fecha_ingresado) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+            RETURNING *`,
+            [data.username, data.password, data.firstname, data.lastname, data.email, data.phonenumber, data.address, data.idroll, data.status, new Date()]
+    );
+    
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error al crear el usuario:', error);
+        throw error; // Propagar el error para manejarlo en el controlador
+        
+    }
 };
 
 // Eliminar un usuario por ID
