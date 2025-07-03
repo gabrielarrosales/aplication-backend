@@ -1,13 +1,17 @@
-import * as LoginModel from "../models/login.models.js";
+import supabase from "../utils/supabaseClient.js";
 import { generarToken } from "../authentication.js";
 
 export async function login(req, res) {
     const { username, password } = req.body;
 
     try {
-        const user = await LoginModel.findUserByUsername(username);
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('username', username)
+            .single();
 
-        if (!user) {
+        if (error || !user) {
             return res.status(401).json({ mensaje: "Usuario no encontrado" });
         }
         if (user.password !== password) {
@@ -29,6 +33,6 @@ export async function login(req, res) {
         });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ mensaje: "Error en el servidor" });
+        res.status(500).json({ mensaje: "Error en el servidor" });
     }
 }

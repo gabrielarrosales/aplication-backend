@@ -1,74 +1,80 @@
-import prisma from '../../prisma/prismaClient.js';
+import supabase from '../utils/supabaseClient.js';
 import { employeeSchema } from '../utils/zodSchemas.js';
 
+// Obtener todos los empleados con Supabase
 export const getEmployees = async (req, res, next) => {
     try {
-        const employees = await prisma.employees.findMany();
+        const { data: employees, error } = await supabase.from('employees').select('*');
+        if (error) throw error;
         res.json(employees);
     } catch (error) {
         next(error); 
     }
 };
 
+// Obtener un empleado por idemployee con Supabase
 export const getOneEmployee = async (req, res, next) => {
     try {
-        const employee = await prisma.employees.findUnique({
-            where: { idemployee: Number(req.params.idemployee) },
-        });
-
+        const { data: employee, error } = await supabase
+            .from('employees')
+            .select('*')
+            .eq('idemployee', req.params.idemployee)
+            .single();
+        if (error) throw error;
         if (!employee) {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
-
         res.json(employee);
-
     } catch (error) {
         next(error);
     }
 };
 
+// Crear un nuevo empleado con Supabase
 export const createEmployee = async (req, res, next) => {
     try {
-        console.log('Datos recibidos:', req.body);
-
         const validatedData = employeeSchema.parse(req.body);
-        const newEmployee = await prisma.employees.create({ data: validatedData });
+        const { data: newEmployee, error } = await supabase
+            .from('employees')
+            .insert([validatedData])
+            .select()
+            .single();
+        if (error) throw error;
         res.status(201).json(newEmployee);
-
     } catch (error) {
-        console.error('Error capturado:', error.message);
         next(error); 
     }
 };
 
+// Eliminar un empleado por idemployee con Supabase
 export const deleteEmployee = async (req, res, next) => {
     try {
-        const deletedEmployee = await prisma.employees.delete({
-            where: { idemployee: Number(req.params.idemployee) },
-        });
-
+        const { data: deletedEmployee, error } = await supabase
+            .from('employees')
+            .delete()
+            .eq('idemployee', req.params.idemployee)
+            .select()
+            .single();
+        if (error) throw error;
         res.json({ message: 'Empleado eliminado', deletedEmployee });
-
     } catch (error) {
         next(error); 
     }
 };
 
+// Actualizar un empleado por idemployee con Supabase
 export const updateEmployee = async (req, res, next) => {
     try {
-        console.log('Datos recibidos:', req.body);
-
         const validatedData = employeeSchema.partial().parse(req.body);
-
-        const updatedEmployee = await prisma.employees.update({
-            where: { idemployee: Number(req.params.idemployee) },
-            data: validatedData,
-        });
-
+        const { data: updatedEmployee, error } = await supabase
+            .from('employees')
+            .update(validatedData)
+            .eq('idemployee', req.params.idemployee)
+            .select()
+            .single();
+        if (error) throw error;
         res.json(updatedEmployee);
-
     } catch (error) {
-        console.error('Error capturado:', error.message);
         next(error); 
     }
 };

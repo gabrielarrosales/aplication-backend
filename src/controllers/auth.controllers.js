@@ -1,4 +1,4 @@
-import { pool } from '../db.js';
+import supabase from '../utils/supabaseClient.js';
 import jwt from 'jsonwebtoken';
 import ApiError from '../utils/ApiError.js';
 
@@ -8,10 +8,13 @@ export const login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-    const user = result.rows[0];
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .single();
 
-    if (!user) return next(new ApiError('Usuario no encontrado', 404));
+    if (error || !user) return next(new ApiError('Usuario no encontrado', 404));
 
     if (user.password !== password) {
       return next(new ApiError('Contraseña incorrecta', 401));
