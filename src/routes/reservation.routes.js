@@ -28,6 +28,6 @@ router.delete('/reservations/:idreservation', authMiddleware, authorizeRoles(1),
 router.put('/reservations/:idreservation', authMiddleware, authorizeRoles(1), updateReservation);
 
 // Obtener todas las reservas (con filtros)
-router.get('/reservations', authMiddleware, authorizeRoles(1), getFilteredReservations);
+//router.get('/reservations', authMiddleware, authorizeRoles(1), getFilteredReservations);
 
 export default router;
