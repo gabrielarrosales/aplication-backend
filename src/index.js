@@ -12,7 +12,9 @@ import 'dotenv/config';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://aplication-frontend-lv8c.vercel.app'
+}));
 app.use(morgan('dev'));
 app.use(express.json()); 
 
